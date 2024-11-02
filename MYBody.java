@@ -92,7 +92,7 @@ public class MYBody {
     }
 
     public void append(MYElement newElement, MYElement parentElement) {
-        if (parentElement == null) {
+        if (parentElement == null || parentElement.getId() == "body") {
             if (!elements.contains(newElement)) {
                 elements.add(newElement);
             }
@@ -100,6 +100,6 @@ public class MYBody {
             if (parentElement != null) {
                 parentElement.addChild(newElement); // 将新元素添加为父元素的子元素
             }
-        }     
+        }  
     }
 }

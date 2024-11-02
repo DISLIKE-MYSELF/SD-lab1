@@ -8,6 +8,7 @@ import org.json.JSONArray;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
+import org.jsoup.nodes.Node;
 import org.jsoup.nodes.TextNode;
 
 import java.net.HttpURLConnection;
@@ -132,42 +133,61 @@ public class MYHtml {
             System.out.println("文件路径无效。");
             return;
         }
-
+    
         try {
             File inputFile = new File(filepath);
             if (!inputFile.exists()) {
                 System.out.println("文件不存在：" + filepath);
                 return;
             }
-
+    
             // 解析 HTML 文件
             Document doc = Jsoup.parse(inputFile, "UTF-8");
             this.head.setTitle(doc.title());
-
+    
             // 解析 body 中的元素并添加到 body
             doc.body().childNodes().forEach(node -> {
-                if (node instanceof Element) {
-                    System.out.println(node.toString());
-                    MYElement newElement = new MYElement(((Element) node).tagName(), ((Element) node).id());
-                    elements.put(id, newElement);
-                    MYElement parent = findElement(((Element) (node.parent())).id());
-                    body.append(newElement, parent); // 可以根据需要插入位置
-                } else if (node instanceof TextNode) {
-                    if (((Element) (node.parent())).id() != "") {
-                        MYTextNode textNode = new MYTextNode(((TextNode) node).getWholeText());
-                        MYElement parent = findElement(((Element) (node.parent())).id());
-                        parent.setText(textNode.getText());
-                    }
-
-                }
-            });
-            System.out.println("文件已成功读取：" + filepath);
+                processNode(node, null);
+                
+            });System.out.println("文件已成功读取：" + filepath);
         } catch (FileNotFoundException e) {
             System.out.println("文件未找到：" + e.getMessage());
         } catch (IOException e) {
             System.out.println("读取文件时出错：" + e.getMessage());
         } catch (Exception e) {
             System.out.println("发生意外错误：" + e.getMessage());
+        }
+    }
+
+    private void processNode(Node node, MYElement parentElement) {
+        if(node.toString().equals("")){
+            return;
+        }else{
+            //System.out.println(node + "\n+1");
+        }
+        if (node instanceof Element) {
+            Element element = (Element) node;
+            MYElement newElement = new MYElement(element.tagName(), element.id());
+
+            // 将新节点加入到映射表中
+            elements.put(newElement.getId(), newElement);
+
+            // 添加到 body 或 parent
+            if (parentElement == null) {
+                body.append(newElement, null); // 根节点直接添加到 body
+            } else {
+                body.append(newElement, parentElement); // 添加为父节点的子节点
+            }
+
+            // 递归处理子节点
+            element.childNodes().forEach(child -> processNode(child, newElement));
+
+        } else if (node instanceof TextNode) {
+            if (parentElement != null) {
+                TextNode textNode = (TextNode) node;
+                MYTextNode myTextNode = new MYTextNode(textNode.text());
+                parentElement.setText(myTextNode.getText());
+            }
         }
     }
 
