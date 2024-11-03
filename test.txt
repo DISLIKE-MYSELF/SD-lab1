@@ -1,13 +1,15 @@
 init
 append hh hh body hh
-append hh1 hh1 hh hh1
-insert hh2 hh2 hh1 hh2
+append hh1 hh1 hh hh1 hh1
+insert hh2 hh2 hh1 hh2 hh2
+insert mm mm hh this is a tset
+print-tree
 delete hh2
 delete hh
 delete head
 edit-id hh dd
 edit-text hh dd
-print-tree
+
 print-indent
 spell-check
 

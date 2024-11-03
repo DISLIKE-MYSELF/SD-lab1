@@ -1,3 +1,4 @@
+import java.util.Arrays;
 import java.util.Scanner;
 import java.util.Stack;
 
@@ -27,7 +28,7 @@ public class CommandLineHtmlEditor {
                         isInitialized = true;
                         break;
 
-                    case "insert":
+                        case "insert":
                         if (!isInitialized) {
                             System.out.println("Please initialize or read a file first.");
                             break;
@@ -39,7 +40,8 @@ public class CommandLineHtmlEditor {
                         String insertTagName = parts[1];
                         String insertId = parts[2];
                         String insertLocation = parts[3];
-                        String insertText = parts.length == 5 ? parts[4] : "";
+                        String insertText = parts.length >= 5 ? String.join(" ", Arrays.copyOfRange(parts, 4, parts.length)) : "";
+
                         if (html.containsKey(insertId)) {
                             throw new IllegalArgumentException("Element with id " + insertId + " already exists.");
                         }
@@ -47,8 +49,7 @@ public class CommandLineHtmlEditor {
                             throw new IllegalArgumentException(
                                     "Element with id " + insertLocation + " does not exist.");
                         }
-                        Command insertCommand = new InsertCommand(html, insertTagName, insertId, insertLocation,
-                                insertText);
+                        Command insertCommand = new InsertCommand(html, insertTagName, insertId, insertLocation, insertText);
                         insertCommand.execute();
                         undoStack.push(insertCommand);
                         redoStack.clear();
@@ -64,22 +65,21 @@ public class CommandLineHtmlEditor {
                             System.out.println("Usage: append tagName idValue parentElement [textContent]");
                             break;
                         }
-
                         String appendTagName = parts[1];
                         String appendId = parts[2];
                         String parentElement = parts[3];
-                        String appendText = parts.length == 5 ? parts[4] : "";
+                        String appendText = parts.length >= 5 ? String.join(" ", Arrays.copyOfRange(parts, 4, parts.length)) : "";
+
                         if (html.containsKey(appendId)) {
                             throw new IllegalArgumentException("Element with id " + appendId + " already exists.");
                         }
                         if (!html.containsKey(parentElement)) {
                             throw new IllegalArgumentException("Element with id " + parentElement + " does not exist.");
                         }
-                        Command appendcommand = new AppendCommand(html, appendTagName, appendId, parentElement,
-                                appendText);
-                        appendcommand.execute();
-                        undoStack.push(appendcommand);
-                        redoStack.clear(); // 清空重做栈
+                        Command appendCommand = new AppendCommand(html, appendTagName, appendId, parentElement, appendText);
+                        appendCommand.execute();
+                        undoStack.push(appendCommand);
+                        redoStack.clear();
                         System.out.println("Appended element: " + appendId);
                         break;
 
@@ -116,14 +116,15 @@ public class CommandLineHtmlEditor {
                             break;
                         }
                         String elementId = parts[1];
-                        String newTextContent = parts.length == 3 ? parts[2] : "";
+                        String newTextContent = parts.length >= 3 ? String.join(" ", Arrays.copyOfRange(parts, 2, parts.length)) : "";
+
                         if (!html.containsKey(elementId)) {
                             throw new IllegalArgumentException("Element with id " + elementId + " does not exist.");
                         }
-                        Command EDTcommand = new EditTextCommand(html, elementId, newTextContent);
-                        EDTcommand.execute();
-                        undoStack.push(EDTcommand);
-                        redoStack.clear(); // 清空重做栈
+                        Command editTextCommand = new EditTextCommand(html, elementId, newTextContent);
+                        editTextCommand.execute();
+                        undoStack.push(editTextCommand);
+                        redoStack.clear();
                         System.out.println("Updated text of element: " + elementId);
                         break;
 

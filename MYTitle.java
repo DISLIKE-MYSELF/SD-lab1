@@ -11,10 +11,16 @@ public class MYTitle {
     }
 
     public String toStringIndented() {
+        if (text == null) {
+            return "<title>\n    </title>";
+        }
         return "<title>\n      " + text.getText() + "\n    </title>";
     }
 
     public String toStringTree(String prefix) {
+        if(text == null){
+            return prefix + "title\n";
+        }
         return prefix + "title\n" + prefix + "-  " + text.getText();
     }
     

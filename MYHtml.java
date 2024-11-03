@@ -119,9 +119,13 @@ public class MYHtml {
 
     }
 
-    public String toStringIndented() {
+    public String toStringIndented(int indent) {
         // 返回缩进格式字符串
-        return "<html>\n" + head.toStringIndented() + body.toStringIndented("   ") + "</html>";
+        String prefix = "";
+        for (int i = 0; i < indent; i++) {
+            prefix+=" ";
+        }
+        return "<html>\n" + head.toStringIndented() + body.toStringIndented(prefix) + "</html>";
     }
 
     public String toStringTree() {
@@ -167,10 +171,11 @@ public class MYHtml {
         }
         if (node instanceof Element) {
             Element element = (Element) node;
-            MYElement newElement = new MYElement(element.tagName(), element.id());
+            MYElement newElement = new MYElement(element.id(), element.tagName());
 
             // 将新节点加入到映射表中
             elements.put(newElement.getId(), newElement);
+            //System.out.println(containsKey(newElement.getId()));
 
             // 添加到 body 或 parent
             if (parentElement == null) {
@@ -198,7 +203,7 @@ public class MYHtml {
         }
 
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(filepath))) {
-            writer.write(toStringIndented());
+            writer.write(toStringIndented(2));
             System.out.println("文件已成功保存：" + filepath);
         } catch (IOException e) {
             System.out.println("写入文件时出错：" + e.getMessage());
@@ -208,7 +213,7 @@ public class MYHtml {
     }
 
     public void printIndent(int indent) {
-        System.out.println(this.toStringIndented());
+        System.out.println(this.toStringIndented(indent));
     }
 
     public void printTree() {
@@ -219,7 +224,12 @@ public class MYHtml {
         // 获取 HTML 中的所有文本内容
         StringBuilder textBuilder = new StringBuilder();
         for (Map.Entry<String, MYElement> entry : elements.entrySet()) {
-            textBuilder.append(entry.getValue().getText()).append(" ");
+            if(entry.getValue().getText() != null){
+                textBuilder.append(entry.getValue().getText()).append(" ");
+            }else{
+                continue;
+            }
+            
         }
 
         String textToCheck = textBuilder.toString().trim();

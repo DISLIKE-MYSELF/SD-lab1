@@ -66,6 +66,9 @@ public class MYElement {
     }
 
     public String getText() {
+        if (text == null) {
+            return null;
+        }
         return text.getText();
     }
 

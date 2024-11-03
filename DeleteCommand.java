@@ -25,6 +25,9 @@ public class DeleteCommand extends Command {
     public void undo() {
         // 需要实现元素恢复的逻辑
         // 这里可以保存删除的元素状态并重新插入
+        if(index == 0){
+            html.append(element.getTagName(), element.getId(), element.getParent().getId(), elementId);
+        }
         if(element.getParent() != null){
             html.insert(element.getTagName(), element.getId(),element.getParent().getChildren().get(index).getId(), element.getText());
         }
